@@ -1,0 +1,94 @@
+#pragma once
+
+#define _NXPOOLS 1
+
+#ifdef _NXPOOLS
+#if defined(USE_NTDDI) && (NTDDI_VERSION >= NTDDI_WIN8)
+#define POOL_NX_OPTIN 1
+#endif
+#endif
+
+#include <ndis.h>
+#include <ntddk.h>
+
+#include <fwpsk.h>
+#include <fwpmk.h>
+#include <fwpmu.h>
+
+
+#include <ws2ipdef.h>
+#include <in6addr.h>
+#include <ip2string.h>
+
+constexpr WCHAR* BLOCK_DEVICE_NAME				= L"\\Device\\BlockDns";
+constexpr WCHAR* BLOCK_SYMLINK_NAME				= L"\\DosDevices\\BlockDns";
+
+constexpr WCHAR* BLOCK_PROVIDER_NAME			= L"BLOCK Provider";
+
+constexpr WCHAR* BLOCK_UDP_SUBLAYER_NAME		= L"BlockerUdpSublayer";
+
+constexpr WCHAR* BLOCK_UDP_CALLOUT_NAME			= L"UdpCallout";
+constexpr WCHAR* BLOCK_UDP_CALLOUT_DESCRIPTION	= L"Blocker UdpCallout";
+
+
+constexpr WCHAR* BLOCK_UDP_FILTER_NAME			= L"BlockerUdpFilter";
+
+enum CALLOUT_GUIDS
+{
+	CG_TCP_FLOW_ESTABLISHED_CALLOUT_V4,
+	CG_TCP_FLOW_ESTABLISHED_CALLOUT_V6,
+	CG_SEND_STREAM_CALLOUT_V4,
+	CG_RECV_STREAM_CALLOUT_V4,
+	CG_RECV_PROT_STREAM_CALLOUT_V4,
+	CG_SEND_STREAM_CALLOUT_V6,
+	CG_RECV_STREAM_CALLOUT_V6,
+	CG_RECV_PROT_STREAM_CALLOUT_V6,
+	CG_UDP_FLOW_ESTABLISHED_CALLOUT_V4,
+	CG_UDP_FLOW_ESTABLISHED_CALLOUT_V6,
+	CG_DATAGRAM_DATA_CALLOUT_V4,
+	CG_DATAGRAM_DATA_CALLOUT_V6,
+	CG_OUTBOUND_TRANSPORT_V4,
+	CG_OUTBOUND_TRANSPORT_V6,
+	CG_INBOUND_TRANSPORT_V4,
+	CG_INBOUND_TRANSPORT_V6,
+	CG_ALE_CONNECT_REDIRECT_V4,
+	CG_ALE_CONNECT_REDIRECT_V6,
+	CG_ALE_ENDPOINT_CLOSURE_V4,
+	CG_ALE_ENDPOINT_CLOSURE_V6,
+	CG_UDP_ALE_CONNECT_REDIRECT_V4,
+	CG_UDP_ALE_CONNECT_REDIRECT_V6,
+	CG_UDP_ALE_ENDPOINT_CLOSURE_V4,
+	CG_UDP_ALE_ENDPOINT_CLOSURE_V6,
+	CG_OUTBOUND_IPPACKET_V4,
+	CG_OUTBOUND_IPPACKET_V6,
+	CG_INBOUND_IPPACKET_V4,
+	CG_INBOUND_IPPACKET_V6,
+	CG_ALE_BIND_REDIRECT_V4,
+	CG_ALE_BIND_REDIRECT_V6,
+	CG_ALE_CONNECT_AUTH_V4,
+	CG_ALE_CONNECT_AUTH_V6,
+	CG_ALE_CONNECT_AUTH_V4_DISCARD,
+	CG_ALE_CONNECT_AUTH_V6_DISCARD,
+	CG_MAX
+};
+
+
+
+struct GlobalData
+{
+	GlobalData() = default;
+	~GlobalData() = default;
+
+	PDRIVER_OBJECT	pDriverObject{ nullptr };
+	PDEVICE_OBJECT	pDeviceObject{ nullptr };
+
+	HANDLE			hEngine{ nullptr };
+	HANDLE			hBfeStateSubscribe{ nullptr };
+
+	GUID			guidProvider{};
+	GUID			guidSublayer{};
+
+	GUID			calloutGuids[CG_MAX]{};
+	UINT32			calloutIds[CG_MAX]{};
+};
+
