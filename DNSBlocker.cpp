@@ -3,6 +3,7 @@
 #include "Lazy.hpp"
 #include "Headers.h"
 #include "Callouts.h"
+#include "Rules.hpp"
 
 LazyInstance<GlobalData> g_pGlobalData;
 
@@ -12,6 +13,7 @@ DriverUnload(PDRIVER_OBJECT DriverObject)
 	UNREFERENCED_PARAMETER(DriverObject);
 
 	LazyInstance<Callouts>::Dispose();
+	LazyInstance<Rules>::Dispose();
 
 	UNICODE_STRING ustrSymbolicLink{};
 	RtlInitUnicodeString(&ustrSymbolicLink, BLOCK_SYMLINK_NAME);
@@ -103,6 +105,22 @@ DriverEntry(
 		DbgBreakPoint();
 #endif
 	}
+
+	// test
+	char szBlock[] = ".baidu.com";
+	// rules->AddRule(szBlock);
+
+	PCHAR pBlock = (char*)ExAllocatePoolWithTag(NonPagedPoolNx, 120, 'xxxx');
+	if (pBlock)
+	{
+		RtlZeroMemory(pBlock, 120);
+
+		RtlCopyMemory(pBlock, szBlock, strlen(szBlock));
+		rules->AddRule(pBlock);
+
+		ExFreePoolWithTag(pBlock, 'xxxx');
+	}
+
 
 
 	if (FWPM_SERVICE_RUNNING == FwpmBfeStateGet())

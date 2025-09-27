@@ -1,6 +1,7 @@
 ﻿#include "Callouts.h"
 #include "Lazy.hpp"
 #include "DNSParse.h"
+#include "Rules.hpp"
 #include <stdio.h>
 
 using namespace DNSParse;
@@ -10,36 +11,36 @@ extern LazyInstance<GlobalData> g_pGlobalData;
 constexpr ULONG STORAGE_TAG = 'GATs';
 
 
-static
-char* 
-FindStrNoCase(char* pHostName, char* pTarget)
-{
-	if (!pHostName || 
-		!pTarget || 
-		strlen(pHostName) < strlen(pTarget))
-	{
-		return nullptr;
-	}
-
-	do
-	{
-		char* h = pHostName;
-		char* t = pTarget;
-
-		while (tolower(*h) == tolower(*t) && *t)
-		{
-			h++;
-			t++;
-		}
-
-		if (*t == '\0')
-		{
-			return h;
-		}
-	} while (*pHostName++);
-
-	return nullptr;
-}
+//static
+//char* 
+//FindStrNoCase(char* pHostName, char* pTarget)
+//{
+//	if (!pHostName || 
+//		!pTarget || 
+//		strlen(pHostName) < strlen(pTarget))
+//	{
+//		return nullptr;
+//	}
+//
+//	do
+//	{
+//		char* h = pHostName;
+//		char* t = pTarget;
+//
+//		while (tolower(*h) == tolower(*t) && *t)
+//		{
+//			h++;
+//			t++;
+//		}
+//
+//		if (*t == '\0')
+//		{
+//			return h;
+//		}
+//	} while (*pHostName++);
+//
+//	return nullptr;
+//}
 
 static
 VOID 
@@ -125,10 +126,10 @@ UdpClassifyFn(
 						   szDomainName,
 						   &nDomainNameLength);
 		// test	
-		char szBlock[] = ".baidu.com";
+		//char szBlock[] = ".baidu.com";
 		if (bResult)
 		{
-			if (FindStrNoCase(szDomainName, szBlock))
+			if (rules->IsInRules(szDomainName))
 			{
 				// DbgBreakPoint();
 				classifyOut->actionType = FWP_ACTION_BLOCK;
@@ -142,9 +143,6 @@ UdpClassifyFn(
 			ExFreePoolWithTag(pStorage, STORAGE_TAG);
 			pStorage = nullptr;
 		}
-		
-
-		
 	}
 
 }
@@ -234,6 +232,7 @@ Callouts::CalloutsInit(IN PDEVICE_OBJECT DeviceObject)
 		return STATUS_SUCCESS;
 	}
 
+
 	ExUuidCreate(&g_pGlobalData->guidProvider);
 	ExUuidCreate(&g_pGlobalData->guidSublayer);
 
@@ -302,6 +301,7 @@ void Callouts::CalloutsFree()
 
 	UnregisterCallouts();
 
+
 	FwpmSubLayerDeleteByKey(g_pGlobalData->hEngine, &g_pGlobalData->guidSublayer);
 	FwpmProviderContextDeleteByKey(g_pGlobalData->hEngine, &g_pGlobalData->guidProvider);
 	
@@ -317,7 +317,7 @@ Callouts::RegisterCallouts(IN PDEVICE_OBJECT DeviceObject)
 {
 	UNREFERENCED_PARAMETER(DeviceObject);
 
-	DbgBreakPoint();
+	//DbgBreakPoint();
 
 	NTSTATUS status{ STATUS_SUCCESS };
 

@@ -31,6 +31,9 @@
     <ClCompile Include="DNSParse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Rules.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Callouts.h">
@@ -52,6 +55,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DNSParse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Locks.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rules.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
