@@ -120,28 +120,23 @@ Rules::ClearAllRules()
 
 	RuleNode* pRuleNode{ nullptr };
 	PLIST_ENTRY pEntry = m_listOfRules.Flink;
-	while (pEntry != &m_listOfRules && pEntry)
+	while (pEntry != &m_listOfRules)
 	{
+		DbgBreakPoint();
 		pRuleNode = CONTAINING_RECORD(pEntry, RuleNode, ListHeader);
 
-		if (pRuleNode)
+		auto pNext = pEntry->Flink;
+		
+		if (pRuleNode->BlackRule)
 		{
-			if (pRuleNode->BlackRule)
-			{
-				//DbgBreakPoint();
+			ExFreePoolWithTag(pRuleNode->BlackRule, RULE_NODE_TAG);
+			RemoveHeadList(&pRuleNode->ListHeader);
 
-				ExFreePoolWithTag(pRuleNode->BlackRule, RULE_NODE_TAG);
-				RemoveHeadList(&pRuleNode->ListHeader);
-
-				ExFreeToNPagedLookasideList(&m_nlookasideOfRules, pRuleNode);
-			}
+			ExFreeToNPagedLookasideList(&m_nlookasideOfRules, pRuleNode);
 		}
-
-		if (pEntry)
-		{
-			pEntry = pEntry->Flink;
-		}
-
+		
+	
+		pEntry = pNext;	
 	}
 
 	/*while (!IsListEmpty(&m_listOfRules))
